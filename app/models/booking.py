@@ -14,6 +14,6 @@ class Booking(Base):
     booking_date: Mapped[date] = mapped_column(nullable=False, index=True)
     booking_time: Mapped[time] = mapped_column(nullable=False)
     guests: Mapped[int] = mapped_column(nullable=False)
-    status: Mapped[str] = mapped_column(String(20), nullable=False)
+    status: Mapped[str] = mapped_column(String(20), nullable=False, default="active")
     created_at: Mapped[datetime] = mapped_column(server_default=func.now())
 

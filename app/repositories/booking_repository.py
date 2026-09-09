@@ -1,6 +1,6 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
-from datetime import date
+from datetime import date, time
 
 from app.models.booking import Booking
 
@@ -39,3 +39,12 @@ class BookingRepository:
         await self.db.commit()
         await self.db.refresh(booking)
         return booking
+
+    async def ensure_slot_is_free(self, booking_date: date, booking_time: time) -> None:
+        query = select(Booking).where(
+            Booking.booking_date == booking_date,
+            Booking.booking_time == booking_time,
+            Booking.status == "active",
+        )
+        result = await self.db.execute(query)
+        return result
