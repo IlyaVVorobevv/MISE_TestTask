@@ -1,11 +1,13 @@
 from logging.config import fileConfig
 import asyncio
 
+from alembic import context
 from sqlalchemy import pool
 from sqlalchemy.ext.asyncio import create_async_engine
-from alembic import context
 
 from app.db import Base
+from app.models.booking import Booking
+
 
 config = context.config
 
@@ -17,29 +19,36 @@ target_metadata = Base.metadata
 
 def run_migrations_offline() -> None:
     url = config.get_main_option("sqlalchemy.url")
+
     context.configure(
         url=url,
         target_metadata=target_metadata,
         literal_binds=True,
-        dialect_opts={"paramstyle": "named"},
+        dialect_opts={
+            "paramstyle": "named",
+        },
     )
 
     with context.begin_transaction():
         context.run_migrations()
 
 
-def do_run_migrations(connection):
+def do_run_migrations(connection) -> None:
     context.configure(
         connection=connection,
-        target_metadata=target_metadata
+        target_metadata=target_metadata,
     )
 
     with context.begin_transaction():
         context.run_migrations()
 
-async def run_migrations_online() -> None:
 
-    ini_section = config.get_section(config.config_ini_section, {})
+async def run_migrations_online() -> None:
+    ini_section = config.get_section(
+        config.config_ini_section,
+        {},
+    )
+
     url = ini_section.get("sqlalchemy.url")
 
     connectable = create_async_engine(

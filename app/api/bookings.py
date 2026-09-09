@@ -38,8 +38,8 @@ async def get_all_bookings(date_booking: date | None = Query(
                            booking_service: BookingService = Depends(get_booking_service)
                            ) -> list[BookingOut]:
 
-    bookings = await booking_service.list_bookings(booking_date=date)
-    return [BookingOut.model_validate(b) for b in bookings]
+    bookings = await booking_service.list_bookings(booking_date=date_booking)
+    return [BookingOut.model_validate(booking) for booking in bookings]
 
 @router_booking.get(
         "/{booking_id}",
@@ -64,11 +64,7 @@ async def cancel_booking(booking_id: int,
                         ) -> BookingOut:
 
         booking = await service.cancel_booking(booking_id)
-        if booking is None:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail=f"Бронь с id {booking_id} не найдена"
-            )
+
         return BookingOut.model_validate(booking)
 
 

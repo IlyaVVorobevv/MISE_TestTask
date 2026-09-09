@@ -11,8 +11,8 @@ class BookingRepository:
     def __init__(self, db: AsyncSession) -> None:
         self.db = db
 
-    async def get_by_id(self, id: int) -> Booking | None:  # Получаем бронь по id
-        query = select(Booking).where(Booking.id == id)
+    async def get_by_id(self, booking_id: int) -> Booking | None:  # Получаем бронь по id
+        query = select(Booking).where(Booking.id == booking_id)
         result = await self.db.execute(query)
         return result.scalar_one_or_none()
 
@@ -23,28 +23,29 @@ class BookingRepository:
         return booking
 
     async def get_all(self, booking_date: date | None = None) -> list[Booking]:
-        query = select(Booking).order_by(Booking.booking_date, Booking.booking_time)
+        query = select(Booking).order_by(
+                                        Booking.booking_date,
+                                Booking.booking_time
+        )
+
         if booking_date is not None:
             query = query.where(Booking.booking_date == booking_date)
         result = await self.db.execute(query)
         return list(result.scalars().all())
 
-    async def get_booking(self, booking_id: int) -> Booking | None:
-        booking = await self.db.get(Booking, booking_id)
-        return booking
-
-    async def cancel_booking(self, booking_id: int) -> Booking:
-        booking = await self.get_booking(booking_id)
-        booking.status = "cancelled"
-        await self.db.commit()
-        await self.db.refresh(booking)
-        return booking
-
-    async def ensure_slot_is_free(self, booking_date: date, booking_time: time) -> None:
+    async def get_active_booking_by_slot(self, booking_date: date, booking_time: time) -> Booking | None:
         query = select(Booking).where(
             Booking.booking_date == booking_date,
             Booking.booking_time == booking_time,
             Booking.status == "active",
         )
+
         result = await self.db.execute(query)
-        return result
+
+        return result.scalar_one_or_none()
+
+    async def cancel_booking(self, booking: Booking) -> Booking:
+        booking.status = "cancelled"
+        await self.db.commit()
+        await self.db.refresh(booking)
+        return booking

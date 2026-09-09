@@ -9,8 +9,6 @@ DATABASE_URL = settings.DB_URL  # Получаем юрл бд из конфиг
 engine = create_async_engine(
     url=DATABASE_URL,
     echo=False,
-    pool_size=5,
-    max_overflow=10
 )
 
 AsyncSessionLocal = async_sessionmaker(
