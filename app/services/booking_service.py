@@ -2,7 +2,7 @@ from fastapi import HTTPException, status
 from datetime import date
 
 from app.repositories.booking_repository import BookingRepository
-from app.schemas.booking import BookingCreate, BookingOut
+from app.schemas.booking import BookingCreate
 from app.models.booking import Booking
 
 
