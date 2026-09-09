@@ -23,10 +23,7 @@ class BookingRepository:
         return booking
 
     async def get_all(self, booking_date: date | None = None) -> list[Booking]:
-        query = select(Booking).order_by(
-                                        Booking.booking_date,
-                                Booking.booking_time
-        )
+        query = select(Booking).order_by(Booking.booking_date,Booking.booking_time)
 
         if booking_date is not None:
             query = query.where(Booking.booking_date == booking_date)
