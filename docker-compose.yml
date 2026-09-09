@@ -1,7 +1,9 @@
 services:
   api:
     build: .
+    container_name: mise_bookings_api
     ports:
       - "8000:8000"
     volumes:
       - ./bookings.db:/app/bookings.db
+    restart: unless-stopped
